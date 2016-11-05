@@ -72,8 +72,8 @@
 
             this.drawBg(hOffset + successHeight + 1);
 
-            var points = this.drawWhiteIceberg(xCenter, hOffset, vOffset, topHeight, inprogressHeight, inprogressWidth,
-                icebergHeight, icebergWidth);
+            var points = this.drawWhiteIceberg(xCenter, hOffset, vOffset, topHeight, unknownHeight,
+                inprogressHeight, inprogressWidth, icebergHeight, icebergWidth);
             //console.log(points);
             this.drawInprogressPart(xCenter, hOffset + topHeight + 1, points.inprogress);
             this.drawUnknownPart(xCenter, hOffset + topHeight + inprogressHeight + 1, points.unknown);
@@ -93,13 +93,13 @@
 
             if (this.data.inprogress > 0) {
                 this.drawLabel(xCenter, hOffset + topHeight + Math.ceil(inprogressHeight / 4),
-                    this.canvas.width + hOffset / 2 - 10, hOffset + topHeight + Math.ceil(inprogressHeight / 4) - 10,
-                    'right', labels.inprogress + ' - ' + this.data.inprogress + '%', labelColors.inprogress);
+                    Math.ceil(hOffset / 2), hOffset + topHeight + Math.ceil(inprogressHeight / 4) - 10,
+                    'left', labels.inprogress + ' - ' + this.data.inprogress + '%', labelColors.inprogress);
             }
 
             if (this.data.unknown > 0) {
-                this.drawLabel(xCenter, icebergHeight - Math.ceil(unknownHeight / 10),
-                    this.canvas.width + hOffset / 2 - 10, icebergHeight - Math.ceil(unknownHeight / 8) - 10,
+                this.drawLabel(xCenter, icebergHeight + Math.ceil(hOffset / 2),
+                    this.canvas.width + hOffset / 2 - 20, icebergHeight - Math.ceil(unknownHeight / 8) - 10,
                     'right', labels.unknown + ' - ' + this.data.unknown + '%', labelColors.unknown);
             }
         }
@@ -116,15 +116,29 @@
             this.ctx.miterLimit = 10;
             this.ctx.fillStyle = 'transparent';
             this.ctx.strokeStyle = color;
-            this.ctx.moveTo(side == 'left' ? lx + text.length * 8 + 2 : lx - text.length * 8 - 2, ly - 7);
+            var textX = 0;
+            var textY = 0;
+            var textXPos;
+            if (Math.abs(y - ly) < 8) {
+                textXPos = this.ctx.measureText(text).width;
+                textX = side == 'left' ? lx + textXPos : lx - textXPos - 18;
+                textY = ly - 5;
+            } else {
+                textXPos = Math.ceil(this.ctx.measureText(text).width / 2);
+                textX = side == 'left' ? lx + textXPos : lx - textXPos;
+                textY = ly + 3;
+            }
+
+            // console.log('y', y, 'ly', ly, Math.abs(y - ly));
+
+            this.ctx.moveTo(textX, textY);
             this.ctx.lineTo(x, y);
             this.ctx.stroke();
-
             this.ctx.restore();
         }
 
-        this.drawWhiteIceberg = function (xCenter, hOffset, vOffset, topHeight, inprogressHeight, inprogressWidth,
-                                          icebergHeight, icebergWidth) {
+        this.drawWhiteIceberg = function (xCenter, hOffset, vOffset, topHeight, unknownHeight,
+                                          inprogressHeight, inprogressWidth, icebergHeight, icebergWidth) {
             var points = {
                 inprogress: [],
                 unknown: []
@@ -136,35 +150,57 @@
             //this.ctx.strokeStyle = '#000000';
             this.ctx.beginPath();
 
-
             //  1/\6
             // 2| |5
             // 3\/4
 
+            // console.log('inprogressHeight, unknownHeight', inprogressHeight, unknownHeight);
             this.ctx.moveTo(xCenter, hOffset);
-            this.drawBrokenLine(xCenter, hOffset, vOffset, hOffset + topHeight, -1);//1
-            points.inprogress = points.inprogress.concat(
-                this.drawBrokenLine(vOffset, hOffset + topHeight,
-                    xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight, 1)
-            );
-            this.ctx.lineTo(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
-            points.inprogress = points.inprogress.concat(
-                this.drawBrokenLine(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight,
-                    vOffset + icebergWidth, hOffset + topHeight, 1)
-            );
-            this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);
-            this.ctx.closePath();
+            if (inprogressHeight > 0 && unknownHeight > 0) {
+                this.drawBrokenLine(xCenter, hOffset, vOffset, hOffset + topHeight, -1);//1
+                points.inprogress = points.inprogress.concat(//2
+                    this.drawBrokenLine(vOffset, hOffset + topHeight,
+                        xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight, 1)
+                );
 
-            this.ctx.moveTo(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
-            this.ctx.lineTo(xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
-            points.unknown = points.unknown.concat(
-                this.drawBrokenLine(xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight,
-                    xCenter, hOffset + icebergHeight, 1)
-            );
-            points.unknown = points.unknown.concat(
-                this.drawBrokenLine(xCenter, hOffset + icebergHeight,
-                    xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight, 1)
-            );
+                this.ctx.lineTo(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
+
+                points.inprogress = points.inprogress.concat(//5
+                    this.drawBrokenLine(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight,
+                        vOffset + icebergWidth, hOffset + topHeight, 1)
+                );
+
+                this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);//6
+                this.ctx.closePath();
+
+                this.ctx.moveTo(xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
+                this.ctx.lineTo(xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight);
+                points.unknown = points.unknown.concat(//3
+                    this.drawBrokenLine(xCenter - Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight,
+                        xCenter, hOffset + icebergHeight, 1)
+                );
+                points.unknown = points.unknown.concat(//4
+                    this.drawBrokenLine(xCenter, hOffset + icebergHeight,
+                        xCenter + Math.ceil(inprogressWidth / 2), hOffset + topHeight + inprogressHeight, 1)
+                );
+
+            } else if (inprogressHeight > 0) {
+                this.drawBrokenLine(xCenter, hOffset, vOffset, hOffset + topHeight, -1);
+                points.inprogress = points.inprogress.concat(
+                    this.drawBrokenLine(vOffset, hOffset + topHeight, xCenter, hOffset + icebergHeight, 1));
+                points.inprogress = points.inprogress.concat(
+                    this.drawBrokenLine(xCenter, hOffset + icebergHeight, vOffset + icebergWidth, hOffset + topHeight, 1));
+                this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);
+            } else if (unknownHeight > 0) {
+                this.drawBrokenLine(xCenter, hOffset, vOffset, hOffset + topHeight, -1);
+                points.unknown = points.unknown.concat(
+                    this.drawBrokenLine(vOffset, hOffset + topHeight, xCenter, hOffset + icebergHeight, 1));
+                points.unknown = points.unknown.concat(
+                    this.drawBrokenLine(xCenter, hOffset + icebergHeight, vOffset + icebergWidth, hOffset + topHeight, 1));
+                this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);
+
+            }
+
 
             this.ctx.closePath();
             this.ctx.fill();

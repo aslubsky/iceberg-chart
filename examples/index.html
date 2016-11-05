@@ -23,13 +23,15 @@
 <body>
 <div id="container" style="text-align: center;"></div>
 <script>
-    function draw(threshold, success, fail, inprogress, unknown) {
+    function draw(success, fail, inprogress, unknown) {
         var canvas = document.createElement("CANVAS");
         document.getElementById('container').appendChild(canvas);
 
-        var chart = new IcebergChart(canvas);
+        var chart = new IcebergChart(canvas, {
+            width: 250,
+            height: 300
+        });
         chart.load({
-            threshold: threshold,
             success: success,
             fail: fail,
             inprogress: inprogress,
@@ -38,17 +40,20 @@
     }
 
     //total 100%
-    draw(75, 50, 10, 20, 20);
-    draw(75, 50, 25, 5, 20);
-    draw(75, 50, 40, 5, 5);
+    draw(50, 10, 20, 20);
+    draw(50, 25, 5, 20);
+    draw(50, 40, 5, 5);
 
-    draw(75, 20, 5, 20, 55);
+    draw(20, 5, 20, 55);
 
-    draw(75, 20, 10, 10, 60);
-    draw(75, 20, 50, 20, 10);
-    draw(75, 20, 60, 10, 10);
+    draw(20, 10, 10, 60);
+    draw(20, 50, 20, 10);
+    draw(20, 60, 10, 10);
 
-    draw(75, 30, 10, 0, 60);
+    draw(30, 10, 5, 55);
+    draw(30, 10, 0, 60);
+    draw(60, 0, 0, 40);
+    draw(60, 0, 40, 0);
 </script>
 </body>
 </html>

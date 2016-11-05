@@ -12,20 +12,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
     <script src="/src/iceberg-chart.js"></script>
+    <style>
+        canvas {
+            background-color: #f0f0f0;
+            margin: 10px;
+        }
+    </style>
 </head>
 
 <body>
-<div style="text-align: center;">
-    <canvas style="background-color: #f0f0f0;" id="canvas"></canvas>
-</div>
+<div id="container" style="text-align: center;"></div>
 <script>
-    var chart = new IcebergChart(document.getElementById('canvas'));
-    chart.load({
-        threshold: 75,
-        success: 10,
-        fail: 5,
-        unknown: 15
-    }).draw();
+    function draw(threshold, success, fail, inprogress, unknown) {
+        var canvas = document.createElement("CANVAS");
+        document.getElementById('container').appendChild(canvas);
+
+        var chart = new IcebergChart(canvas);
+        chart.load({
+            threshold: threshold,
+            success: success,
+            fail: fail,
+            inprogress: inprogress,
+            unknown: unknown
+        }).draw();
+    }
+
+    //total 100%
+    draw(75, 50, 10, 20, 20);
+    draw(75, 50, 25, 5, 20);
+    draw(75, 50, 40, 5, 5);
+
+    draw(75, 20, 5, 20, 55);
+
+    draw(75, 20, 10, 10, 60);
+    draw(75, 20, 50, 20, 10);
+    draw(75, 20, 60, 10, 10);
+
+    draw(75, 30, 10, 0, 60);
 </script>
 </body>
 </html>

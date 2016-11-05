@@ -198,7 +198,11 @@
                 points.unknown = points.unknown.concat(
                     this.drawBrokenLine(xCenter, hOffset + icebergHeight, vOffset + icebergWidth, hOffset + topHeight, 1));
                 this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);
-
+            } else {
+                this.drawBrokenLine(xCenter, hOffset, vOffset, hOffset + topHeight, -1);
+                this.drawBrokenLine(vOffset, hOffset + topHeight, xCenter, hOffset + icebergHeight, 1);
+                this.drawBrokenLine(xCenter, hOffset + icebergHeight, vOffset + icebergWidth, hOffset + topHeight, 1);
+                this.drawBrokenLine(vOffset + icebergWidth, hOffset + topHeight, xCenter, hOffset, -1);
             }
 
 

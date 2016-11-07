@@ -92,8 +92,8 @@
             }
 
             if (this.data.inprogress > 0) {
-                this.drawLabel(xCenter, hOffset + topHeight + Math.ceil(inprogressHeight / 3),
-                    Math.ceil(hOffset / 2), hOffset + topHeight + Math.ceil(inprogressHeight / 3) - 10,
+                this.drawLabel(xCenter, hOffset + topHeight + Math.ceil(inprogressHeight / 2),
+                    Math.ceil(hOffset / 2), hOffset + topHeight + Math.ceil(inprogressHeight / 2) - 10,
                     'left', labels.inprogress + ' - ' + this.data.inprogress + '%', labelColors.inprogress);
             }
 

@@ -85,7 +85,11 @@
                     'left', labels.success + ' - ' + this.data.success + '%', labelColors.success);
             }
 
-            if (this.data.fail > 0) {
+            if (this.data.unknown > 0 && this.data.inprogress == 0) {
+                this.drawLabel(xCenter, hOffset + topHeight - Math.ceil((icebergHeight * this.data.fail / 100) / 2),
+                    hOffset, hOffset + successHeight + 14,
+                    'left', labels.fail + ' - ' + this.data.fail + '%', labelColors.fail);
+            } else if (this.data.fail > 0) {
                 this.drawLabel(xCenter, hOffset + topHeight - Math.ceil((icebergHeight * this.data.fail / 100) / 2),
                     this.canvas.width - hOffset, hOffset + successHeight + 14,
                     'right', labels.fail + ' - ' + this.data.fail + '%', labelColors.fail);
